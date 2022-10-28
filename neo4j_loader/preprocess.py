@@ -5,12 +5,20 @@ import os
 
 import nodes
 import relationships
-from utils import neo4j_import_dir
+from utils import root, neo4j_import_dir
 
-nodes.generate_node_files()
-relationships.generate_relationship_files()
-nodes.get_missing_products(
-    os.path.join(neo4j_import_dir, 'Review_rates_Product.csv'), [
-        os.path.join(neo4j_import_dir, 'product.csv'),
-        os.path.join(neo4j_import_dir, 'extended_product.csv')
-    ])
+
+def main(meta_path=os.path.join(root, "All_Amazon_Meta.json"),
+         review_path=os.path.join(root, "All_Amazon_Review.json")):
+    """ main function """
+    nodes.generate_node_files(meta_path, review_path)
+    relationships.generate_relationship_files(meta_path, review_path)
+    nodes.get_missing_products(
+        os.path.join(neo4j_import_dir, 'Review_rates_Product.csv'), [
+            os.path.join(neo4j_import_dir, 'product.csv'),
+            os.path.join(neo4j_import_dir, 'extended_product.csv')
+        ])
+
+
+if __name__ == "__main__":
+    main()

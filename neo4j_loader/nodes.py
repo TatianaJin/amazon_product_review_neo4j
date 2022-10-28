@@ -243,7 +243,7 @@ def get_missing_products(rates_file,
                 outf.write(f'{asin},,,\n')
 
 
-def generate_node_files():
+def generate_node_files(meta_path, review_path):
     """
     Generate the node files.
         * Brand
@@ -253,17 +253,23 @@ def generate_node_files():
         * Review
         * Product
     """
-    print("Generate node files")
-    meta_path = os.path.join(root, "All_Amazon_Meta.json")
-    review_path = os.path.join(root, "All_Amazon_Review.json")
+    print(f'meta_path={meta_path}')
+    print(f'review_path={review_path}')
 
+    print("Generate Brand node files")
     get_brands(meta_path, word_frequency=False, replace=BRAND_REPLACE_PATTERNS)
+    print("Generate Category node files")
     get_categories(meta_path)
+    print("Generate Style node files")
     get_style_keys(review_path)
+    print("Generate Reviewer node files")
     get_reviewers(review_path)
+    print("Generate Product node files")
     get_product(meta_path)
+    print("Generate Review node files")
     get_reviews(review_path)
 
 
 if __name__ == "__main__":
-    generate_node_files()
+    generate_node_files(os.path.join(root, "All_Amazon_Meta.json"),
+                        os.path.join(root, "All_Amazon_Review.json"))

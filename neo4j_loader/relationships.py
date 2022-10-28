@@ -214,14 +214,14 @@ def product_to_product(data_path, key="also_buy"):
                             out_file.write(f"{j['asin']},{dst_asin}\n")
 
 
-def generate_relationship_files():
+def generate_relationship_files(meta_path, review_path):
     """
     Generate the relationship files.
-        * Review_isWrittenBy_Reviewer
     """
+    print(f'meta_path={meta_path}')
+    print(f'review_path={review_path}')
+
     print("Generate relationship files")
-    meta_path = os.path.join(root, "All_Amazon_Meta.json")
-    review_path = os.path.join(root, "All_Amazon_Review.json")
     has_brand(meta_path)
     is_written_by(review_path)
     refers_to(review_path)
@@ -231,4 +231,5 @@ def generate_relationship_files():
 
 
 if __name__ == "__main__":
-    generate_relationship_files()
+    generate_relationship_files(os.path.join(root, "All_Amazon_Meta.json"),
+                                os.path.join(root, "All_Amazon_Review.json"))

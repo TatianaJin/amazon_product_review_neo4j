@@ -7,6 +7,9 @@ import re
 import html
 
 root = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+assert os.getenv(
+    "NEO4J_HOME"
+) is not None, "Please set your NEO4J_HOME environment variable"
 neo4j_import_dir = os.path.join(os.getenv("NEO4J_HOME"), "import")
 
 REVIEW_COUNT = 233055327

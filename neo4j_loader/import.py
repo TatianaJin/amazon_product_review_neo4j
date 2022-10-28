@@ -2,15 +2,17 @@
 """ Import Amazon product review graph to NEO4J using neo4j-admin import. """
 
 import os
+from glob import glob
 
 from utils import neo4j_import_dir
 
 ###### NODE FILES ######
 # excluding reviews of year 2018
 # if multiple CSVs in a file group contain header, use --auto-skip-subsequent-headers
+PRODUCT_FILES = ','.join(glob("*product.csv", root_dir=neo4j_import_dir))
 NODE_FILES = [
     '--nodes=Brand=brand.csv', '--nodes=Category=category.csv',
-    '--nodes=Style=style.csv', '--nodes=Product=product.csv',
+    '--nodes=Style=style.csv', f'--nodes=Product={PRODUCT_FILES}',
     '--nodes=Reviewer=reviewers.csv',
     '--nodes=Review=review/review_header.csv,' +
     ','.join([f'review/review{year}.csv' for year in range(1996, 2018)])

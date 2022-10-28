@@ -170,6 +170,7 @@ def get_product(data_path):
     """ Generate Product node file. """
     output_path = os.path.join(neo4j_import_dir, "product.csv")
     asins = set()
+    extended_similar_asins = set()
     with open(data_path, "r") as inf:
         with open(output_path, "w") as outf:
             outf.write(
@@ -193,7 +194,53 @@ def get_product(data_path):
                 rank = rank[0] if isinstance(rank, list) else rank
                 rank = escape_comma_newline(rank)
                 outf.write(f"{asin},{description},{price},{rank}\n")
+
+                # handle product that only exist in similar item info
+                for key in ['also_buy', 'also_view', 'similar_item']:
+                    if key in j:
+                        ids = j[key]
+                        if key == "similar_item":
+                            ids = [
+                                subj["asin"] for subj in ids if "asin" in subj
+                            ]
+                        for similar_asin in ids:
+                            if len(
+                                    similar_asin
+                            ) > 0 and similar_asin != 'new-releases' and similar_asin not in asins:
+                                extended_similar_asins.add(similar_asin)
+            for asin in sorted(extended_similar_asins):
+                if asin not in asins:
+                    outf.write(f"{asin},,,\n")
     print(f"output to {output_path}")
+
+
+def get_missing_products(rates_file,
+                         product_files,
+                         output_name='missing_product.csv'):
+    """
+    @param rates_file The Review_rates_Product.csv file, with header "review_id,product_id"
+    @param product_files The product.csv file, with header "asin,description,price,rank"
+    @param output_name The output name
+    """
+    rated_products = set()
+    with open(rates_file, 'r') as inf:
+        for line in tqdm(inf, desc='Line'):
+            _, asin = line.strip().rsplit(',', 1)
+            rated_products.add(asin)
+    rated_products.remove(':END_ID')
+    print(f"rated_products {len(rated_products)}")
+
+    asins = set()
+    for product_file in product_files:
+        print(f"processing {product_file}")
+        with open(product_file, 'r') as inf:
+            for line in inf:
+                asin, _ = line.split(',', 1)
+                asins.add(asin)
+    with open(os.path.join(neo4j_import_dir, output_name), 'w') as outf:
+        for asin in rated_products:
+            if asin not in asins:
+                outf.write(f'{asin},,,\n')
 
 
 def generate_node_files():

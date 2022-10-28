@@ -204,7 +204,8 @@ def product_to_product(data_path, key="also_buy"):
                         data_list = j[k]
                         if k == "similar_item":
                             data_list = [
-                                j["asin"] for j in data_list if "asin" in j
+                                subj["asin"] for subj in data_list
+                                if "asin" in subj
                             ]
                         for dst_asin in data_list:
                             if len(dst_asin

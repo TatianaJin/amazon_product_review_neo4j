@@ -107,17 +107,18 @@ def get_reviewers(path):
     """
     Generate Reviewer node file.
     """
-    reviewers = set()
+    reviewers = {}
     output_path = os.path.join(neo4j_import_dir, "reviewers.csv")
     with open(path, "r") as inf:
         for line in tqdm(inf, total=REVIEW_COUNT, desc="Line"):
             j = json.loads(line.strip())
-            reviewers.add((j["reviewerID"],
-                           escape_comma_newline(clean_html(j["reviewerName"]))
-                           if "reviewerName" in j else ""))
+            if not j["reviewerID"] in reviewers:
+                name = escape_comma_newline(clean_html(
+                    j["reviewerName"])) if "reviewerName" in j else ""
+                reviewers[j["reviewerID"]] = name
     with open(output_path, "w") as outf:
         outf.write("reviewerID:ID,name:string\n")
-        for rid, name in sorted(reviewers):
+        for rid, name in sorted(reviewers.items()):
             outf.write(f"{rid},{escape_comma_quote(name)}\n")
         print(f"output to {output_path}")
 

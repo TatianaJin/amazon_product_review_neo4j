@@ -83,6 +83,17 @@ The data is cleaned as follows.
 
 ![data cleaning logic](data_cleaning_logic.png)
 
+## Extract Subgraph
+For example, in Ofnil 0.1.0 version, We extract the subgraph from the above graph database. The subgraph schema is shown as follows.
+![subgraph schema](subgraph_schema.png)
+``` bash
+# 1. extract subgraph from neo4j database by Python client.
+pip3 install neo4j
+./neo4j_loader/extract_subgraph.py
+
+# 2. import subgraph (must ensure that the target database is empty. By default, the subgraph database name is `demo1`. check neo4j-admin import guide for reference)
+./neo4j_loader/import_subgraph_v1.py
+```
 ## Improvement
 
 Instead of decompressing the `.json.gz` files and read lines of the text file for processing, we may use the gzip library in python to directly read lines for better speed.
